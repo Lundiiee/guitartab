@@ -1,6 +1,7 @@
 
 
 class MusicInfo:
+
     def __init__(self, info):
         """
 
@@ -16,18 +17,12 @@ class MusicInfo:
         [[(8,2), (x, y)], ...]
 
         """
-        self.info = info
 
         if validate_info(info).type == "invalid":
             raise Exception("Music info given does not follow correct format. Convert by calling convert_to_info(info)")
 
-    def get_guitar_tab(self, tuning=[]) -> list:
-        """
-        Turns musical info of MusicInfo format into an array of guitar numbers
-
-        [(fret, string), [(fret, string), (fret, string)], (...)]
-        """
-        pass
+        self.info = info
+        self.note_list = get_note_list('C', 'C', 0, 6, 22)
 
     def get_guitar_tab_string(self, tuning=[]) -> str:
         """
@@ -41,6 +36,52 @@ class MusicInfo:
         E 4--5--6-----------|
         """
         pass
+
+
+def get_guitar_tab(_info, tuning=['E2', 'A2', 'D3', 'G3', 'B3', 'E4']) -> list:
+    """
+    Turns musical info of MusicInfo format into an array of guitar numbers
+
+    [(fret, string), [(fret, string), (fret, string)], (...)]
+    """
+    pass
+
+def get_note_list(starting_key='E', ending_key='E', octave_start=2, octave_end=4, guitar_frets=0) -> list:
+    """
+    Returns a list of notes with their corresponding octaves and is represented by sharp keys
+
+    'F#4', 'C4', '(note)(octave)'
+    """
+
+    octave = ['C', 'C#', 'D', 'D#',
+              'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+
+    # the number of notes between octaves, plus the offset of the octave key from start of octave
+    number_of_notes = (octave_end - octave_start) * 12 + (octave.index(ending_key)) + guitar_frets
+
+    note_dictionary = []
+
+    current_octave = octave_start
+    index = octave.index(starting_key)
+    for k in range(1, number_of_notes + 1):
+
+        if current_octave == octave_end and octave[index] == ending_key:
+            note_dictionary.append(octave[index] + str(current_octave))
+
+            break
+
+        # if index reaches end of octave, reset index and change current octave
+        if index == len(octave):
+            index = 0
+            current_octave += 1
+
+            continue
+
+        note_dictionary.append(octave[index] + str(current_octave))
+
+        index += 1
+
+    return note_dictionary
 
 
 def convert_to_info(notationtype):
