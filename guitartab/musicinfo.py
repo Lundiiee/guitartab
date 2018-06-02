@@ -1,8 +1,6 @@
-
-
 class MusicInfo:
 
-    def __init__(self, info):
+    def __init__(self, info, guitar_frets=20):
         """
 
         info contains notes for standard or guitar notation
@@ -38,13 +36,57 @@ class MusicInfo:
         pass
 
 
-def get_guitar_tab(_info, tuning=['E2', 'A2', 'D3', 'G3', 'B3', 'E4']) -> list:
+def get_guitar_tab(info, note_list, tuning=['E2', 'A2', 'D3', 'G3', 'B3', 'E4'], guitar_frets=20, use_closest_notes=True, keep_other_options=True) -> list:
     """
     Turns musical info of MusicInfo format into an array of guitar numbers
 
     [(fret, string), [(fret, string), (fret, string)], (...)]
     """
+
+    guitar_tab = []
+    guitar_strings = {}
+
+    # set each tuning string to have a set of notes that correspond to it on the fretboard
+    for k in tuning:
+
+        # find where the tuning note starts
+        start_index = note_list.index(k)
+
+        if start_index + guitar_frets > len(note_list):
+            raise Exception("Note list does not contain enough notes for the specified amount of guitar frets!")
+
+        # set the tuning string to dictionary assigned to a list of the notes
+        guitar_strings[k] = []
+
+        # begin to add notes to the corresponding tuning note
+        for i in range(start_index, start_index + guitar_frets):
+            guitar_strings[k].append(note_list[i])
+
+    def get_tune_string(note):
+        for y in guitar_strings:
+            if note in guitar_strings[y]:
+                return [guitar_strings[y].index(note), y]
+
+        raise Exception("Unable to find note within tuning strings")
+
+    for x in info:
+
+        # check if the current index in notes is a chord or not
+        if not isinstance(x, list):
+            guitar_tab.append(get_tune_string(x))
+        else:
+            chord = []
+            for y in x:
+                chord.append(get_tune_string(y))
+
+            guitar_tab.append(chord)
+
+    return guitar_tab
+
+
+def convert_note_to_guitar(note):
     pass
+
 
 def get_note_list(starting_key='E', ending_key='E', octave_start=2, octave_end=4, guitar_frets=0) -> list:
     """
@@ -63,12 +105,7 @@ def get_note_list(starting_key='E', ending_key='E', octave_start=2, octave_end=4
 
     current_octave = octave_start
     index = octave.index(starting_key)
-    for k in range(1, number_of_notes + 1):
-
-        if current_octave == octave_end and octave[index] == ending_key:
-            note_dictionary.append(octave[index] + str(current_octave))
-
-            break
+    for k in range(1, number_of_notes):
 
         # if index reaches end of octave, reset index and change current octave
         if index == len(octave):
@@ -115,3 +152,12 @@ def get_tab_from_ug(self):
     Retrieves guitar tabs from ultimate-guitar.com
     """
     pass
+
+
+def check_iterable(obj):
+    try:
+        _ = iter(obj)
+    except TypeError:
+        return False
+    else:
+        return True
