@@ -35,8 +35,10 @@ class MusicInfo:
         """
         pass
 
+# todo: add functionality for guitar_tab to include all possible positions of a note based on the tuning
 
-def get_guitar_tab(info, note_list, tuning=['E2', 'A2', 'D3', 'G3', 'B3', 'E4'], guitar_frets=20, use_closest_notes=True, keep_other_options=True) -> list:
+
+def get_guitar_tab(info, note_list, tuning=['E2', 'A2', 'D3', 'G3', 'B3', 'E4'], guitar_frets=15, use_closest_notes=True, keep_other_options=True) -> list:
     """
     Turns musical info of MusicInfo format into an array of guitar numbers
 
