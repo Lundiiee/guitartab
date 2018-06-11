@@ -1,6 +1,6 @@
 from tkinter import *
 import turtle
-import guitartab.musicgui
+import guitartab.musicgui as gui
 import tkinter.filedialog as tk
 import tkinter.messagebox as tk2
 
@@ -8,28 +8,55 @@ import tkinter.messagebox as tk2
 class Application(Frame):
     def __init__(self, master):
         super(Application, self).__init__(master)
-        self.turtle = None
         self.grid_canvas_multiplier = 20
+
+        self.turtle = None
         self.screen = None
+        self.canvas = None
+
         self.create_widgets()
+        self.draw()
 
     def create_widgets(self):
-        # self.text1 = Text(width=20, height=20)
-        # self.text1.pack(expand=YES, fill=BOTH)  # to make the textbox fill entire window
 
         self.grid_canvas_multiplier = 20
 
-        self.screen = Canvas(master=self.master, width=500, height=500)
-        self.screen.pack(expand=YES, fill=BOTH)
+        self.canvas = Canvas(master=self.master, width=width, height=height)
+        self.canvas.pack(expand=YES, fill=BOTH)
+
+        self.turtle = turtle.RawTurtle(self.canvas)
+        self.screen = self.turtle.getscreen()
+
+        self.turtle.hideturtle()
+        self.turtle.speed(1)
+        self.screen.tracer(0, 0)
+        self.turtle.home()
+
+        self.turtle.pencolor("#000000")
 
     def draw(self):
-        pass
+        x = -width / 2
+        y = height / 2
+        space_between_staffs = 140
 
+        staffs = []
+
+        for i in range(1,6):
+            temp = gui.Staff(None, x, y)
+            temp.draw_staff(self.turtle)
+
+            staffs.append(temp)
+            y -= space_between_staffs
+
+
+width = 900
+height = 750
 
 root = Tk()
 root.title('Text Editor')
-root.geometry('600x700')
-root.wm_maxsize(600, 700)
-root.wm_minsize(600, 700)
+root.geometry(str(width) + 'x' + str(height))
+root.wm_maxsize(width, height)
+root.wm_minsize(width, height)
+
 app = Application(root)
 app.mainloop()
